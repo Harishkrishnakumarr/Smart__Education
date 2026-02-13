@@ -122,6 +122,18 @@ Server runs on:
 
 http://localhost:8080
 
+💻 4️⃣ Frontend Setup (React)
+
+Go to frontend folder:
+
+cd smart-edu-frontend
+npm install
+npm start
+
+
+Frontend runs on:
+
+http://localhost:5173
 
 The goal of this project is to demonstrate:
 
