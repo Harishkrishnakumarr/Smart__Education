@@ -113,11 +113,8 @@ google.genai.model=gemini-1.5-flash
 
 server.port=8080
 
-
-
 3️⃣ Run Backend
 mvn spring-boot:run
-
 
 Server runs on:
 
@@ -133,9 +130,7 @@ npm start
 
 
 Frontend runs on:
-
 http://localhost:5173
-
 The goal of this project is to demonstrate:
 
 Backend system design
