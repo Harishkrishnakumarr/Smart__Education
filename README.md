@@ -112,7 +112,6 @@ google.genai.model=gemini-1.5-flash
 
 server.port=8080
 
-To create api key -> https://aistudio.google.com/app/api-keys and paste it 
 
 
 3️⃣ Run Backend
