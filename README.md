@@ -91,6 +91,7 @@ React (for API consumption)
 
 
 ⚙️ How to Run the Project
+
 1️⃣ Clone Repository
 git clone https://github.com/Harishkrishnakumarr/Smart__Education.git
 
