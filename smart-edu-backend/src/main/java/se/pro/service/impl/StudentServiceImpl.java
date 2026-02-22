@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import se.pro.dto.StudentRequestDto;
+import se.pro.dto.StudentResponseDto;
 import se.pro.entity.Student;
 import se.pro.entity.SchoolClass;
 import se.pro.repo.SchoolClassRepository;
@@ -19,40 +20,60 @@ import java.util.List;
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
-    private final SchoolClassRepository schoolClassRepository;   
+    private final SchoolClassRepository schoolClassRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    // ---------------- CREATE ----------------
+
     @Override
-    public Student createStudent(StudentRequestDto dto) {
+    public StudentResponseDto createStudent(StudentRequestDto dto) {
 
-        SchoolClass schoolClass = entityManager.getReference(SchoolClass.class, dto.getSchoolClassId());
+        SchoolClass schoolClass = entityManager
+                .getReference(SchoolClass.class, dto.getSchoolClassId());
 
-        Student s = Student.builder()
+        Student student = Student.builder()
                 .name(dto.getName())
-                .schoolClass(schoolClass)
                 .section(dto.getSection())
                 .parentEmail(dto.getParentEmail())
+                .schoolClass(schoolClass)
                 .build();
 
-        return studentRepository.save(s);
+        Student saved = studentRepository.save(student);
+
+        return mapToDto(saved);   // ✅ method exists below
     }
 
+    // ---------------- GET ONE ----------------
 
     @Override
-    public Student getStudent(Long id) {
-        return studentRepository.findById(id)
+    public StudentResponseDto getStudent(Long id) {
+
+        Student s = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        return mapToDto(s);
     }
 
+    // ---------------- GET ALL ----------------
+
     @Override
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public List<StudentResponseDto> getAllStudents() {
+
+        return studentRepository.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
-    @Override
-    public Student updateStudent(Long id, StudentRequestDto dto) {
+    // ---------------- UPDATE ----------------
 
-        Student s = getStudent(id);
+    @Override
+    public StudentResponseDto updateStudent(Long id, StudentRequestDto dto) {
+
+        Student s = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
         SchoolClass schoolClass = entityManager
                 .getReference(SchoolClass.class, dto.getSchoolClassId());
@@ -62,12 +83,28 @@ public class StudentServiceImpl implements StudentService {
         s.setSection(dto.getSection());
         s.setParentEmail(dto.getParentEmail());
 
-        return studentRepository.save(s);
+        Student updated = studentRepository.save(s);
+
+        return mapToDto(updated);
     }
 
+    // ---------------- DELETE ----------------
 
     @Override
     public void deleteStudent(Long id) {
         studentRepository.deleteById(id);
+    }
+
+    // ================== MAPPING METHOD ==================
+
+    private StudentResponseDto mapToDto(Student s) {
+
+        return StudentResponseDto.builder()
+                .id(s.getId())
+                .name(s.getName())
+                .section(s.getSection())
+                .parentEmail(s.getParentEmail())
+                .schoolClassId(s.getSchoolClass().getId())
+                .build();
     }
 }
