@@ -2,6 +2,9 @@ package se.pro.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import se.pro.dto.StudentRequestDto;
 import se.pro.entity.Student;
 import se.pro.entity.SchoolClass;
@@ -17,11 +20,12 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final SchoolClassRepository schoolClassRepository;   
+    @PersistenceContext
+    private EntityManager entityManager;
     @Override
     public Student createStudent(StudentRequestDto dto) {
 
-        SchoolClass schoolClass = schoolClassRepository.findById(dto.getSchoolClassId())
-                .orElseThrow(() -> new RuntimeException("Class not found"));
+        SchoolClass schoolClass = entityManager.getReference(SchoolClass.class, dto.getSchoolClassId());
 
         Student s = Student.builder()
                 .name(dto.getName())
@@ -50,8 +54,8 @@ public class StudentServiceImpl implements StudentService {
 
         Student s = getStudent(id);
 
-        SchoolClass schoolClass = schoolClassRepository.findById(dto.getSchoolClassId())
-                .orElseThrow(() -> new RuntimeException("Class not found"));
+        SchoolClass schoolClass = entityManager
+                .getReference(SchoolClass.class, dto.getSchoolClassId());
 
         s.setName(dto.getName());
         s.setSchoolClass(schoolClass);
